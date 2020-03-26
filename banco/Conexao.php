@@ -35,9 +35,9 @@ class Conexao
             printf("Falha na conexão: %s\n", mysqli_connect_error());
             exit();
         } else {
-            echo("Conexão realizada com sucesso: <br>");
-            print_r($this->getConexao());
+            //echo("Conexão realizada com sucesso: <br>");
+            //print_r($this->getConexao());
         }
     }
 }
-$conexao = new Conexao();
+//$conexao = new Conexao();

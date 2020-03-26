@@ -6,15 +6,22 @@ require_once '../model/FilmeDao.php';
 use model\Filme;
 use model\FilmeDao;
 
-$op = $_POST["operacao"];
+$op = $_REQUEST["operacao"];
 
 switch ($op) {
     case 'insert':
         insert();
+        header("Location: ../view/select.php");
+        break;
+
+    case 'delete':
+        delete();
+        header("Location: ../view/select.php");
         break;
 }
 
-function insert(){
+function insert()
+{
 
     $nome = $_POST["nome"];
     $genero = $_POST["genero"];
@@ -25,4 +32,13 @@ function insert(){
     $movie->setNome($nome);
     $movie->setGenero($genero);
     $dao->insert($movie);
+}
+
+function delete()
+{
+
+    $id = $_GET["id"];
+
+    $filmeDao = new FilmeDao();
+    $filmeDao->delete($id);
 }
