@@ -32,15 +32,24 @@ class FilmeDao
       $stmt->close();
    }
 
-   public function select(){
+   public function select()
+   {
       $sql = "select * from filmes";
       $stmt = $this->conexao->prepare($sql);
+      return $this->getArrayMovies($stmt);
+   }
+
+   public function selectById($id)
+   {
+      $sql = "select * from filmes where id = ?";
+      $stmt = $this->conexao->prepare($sql);
+      $stmt->bind_param('i', $id);
 
       $filmes = new ArrayObject();
       $stmt->execute();
       $result = $stmt->get_result();
 
-      while($row = $result->fetch_assoc()) {
+      while ($row = $result->fetch_assoc()) {
          $f = new Filme();
          $f->setId($row["id"]);
          $f->setNome($row["nome"]);
@@ -53,7 +62,53 @@ class FilmeDao
       return $filmes;
    }
 
-   public function delete($id){
+   public function selectByName($nome)
+   {
+      $nome = "%" . $nome . "%";
+
+      $sql = "select * from filmes where nome like ?";
+      $stmt = $this->conexao->prepare($sql);
+      $stmt->bind_param('s', $nome);
+
+      return $this->getArrayMovies($stmt);
+   }
+
+   public function getArrayMovies($stmt)
+   {
+      $filmes = new ArrayObject();
+      $stmt->execute();
+      $result = $stmt->get_result();
+
+      while ($row = $result->fetch_assoc()) {
+         $f = new Filme();
+         $f->setId($row["id"]);
+         $f->setNome($row["nome"]);
+         $f->setGenero($row["genero"]);
+
+         $filmes->append($f);
+      }
+
+      $stmt->close();
+      return $filmes;
+   }
+
+   public function update(Filme $movie)
+   {
+      $sql = "update filmes set nome = ?, genero = ? where id = ?";
+
+      $stmt = $this->conexao->prepare($sql);
+      $stmt->bind_param(
+         'ssi',
+         $movie->getNome(),
+         $movie->getGenero(),
+         $movie->getId()
+      );
+      $stmt->execute();
+      $stmt->close();
+   }
+
+   public function delete($id)
+   {
       $sql = "delete from filmes where id = ?";
 
       $stmt = $this->conexao->prepare($sql);

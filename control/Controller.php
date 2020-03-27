@@ -14,6 +14,11 @@ switch ($op) {
         header("Location: ../view/select.php");
         break;
 
+    case 'update':
+        update();
+        header("Location: ../view/select.php");
+        break;
+
     case 'delete':
         delete();
         header("Location: ../view/select.php");
@@ -32,6 +37,21 @@ function insert()
     $movie->setNome($nome);
     $movie->setGenero($genero);
     $dao->insert($movie);
+}
+
+function update()
+{
+$id = $_POST['id'];
+$nome = $_POST['nome'];
+$genero = $_POST['genero'];
+
+$filme = new Filme();
+$filme->setId($id);
+$filme->setNome($nome);
+$filme->setGenero($genero);
+
+$filmeDao = new FilmeDao();
+$filmeDao->update($filme);
 }
 
 function delete()
