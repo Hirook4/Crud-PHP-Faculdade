@@ -2,10 +2,12 @@
 
 namespace banco;
 
-use mysqli;
+use PDO;
+use PDOException;
 
 class Conexao
 {
+    private $sgbd = "mysql";
     private $host = "127.0.0.1";
     private $username = "root";
     private $password = "";
@@ -24,19 +26,11 @@ class Conexao
 
     private function conect()
     {
-        $this->conexao = new mysqli(
-            $this->host,
-            $this->username,
-            $this->password,
-            $this->database
-        );
-
-        if (mysqli_connect_errno()) {
-            printf("Falha na conexão: %s\n", mysqli_connect_error());
-            exit();
-        } else {
-            //echo("Conexão realizada com sucesso: <br>");
-            //print_r($this->getConexao());
+        try {
+            $this->conexao = new PDO("$this->sgbd:host=$this->host;dbname=$this->database", $this->username, $this->password);
+        } catch (PDOException $e) {
+            printf("Falha na conexao" + $e->getMessage());
+            die();
         }
     }
 }

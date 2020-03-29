@@ -6,6 +6,8 @@ require_once 'C:\xampp\htdocs\Projetos\CRUD\banco\Conexao.php'; // Tive que colo
 require_once 'Filme.php';
 
 use ArrayObject;
+use PDO;
+use PDOException;
 use banco\Conexao;
 use model\Filme;
 
@@ -25,11 +27,16 @@ class FilmeDao
       $nome = $filme->getNome();
       $genero = $filme->getGenero();
 
-      $sql = "insert into filmes (nome, genero) values (?,?)";
-      $stmt = $this->conexao->prepare($sql);
-      $stmt->bind_param('ss', $nome, $genero);
-      $stmt->execute();
-      $stmt->close();
+      try {
+         $sql = "insert into filmes (nome, genero) values (:NOME, :GENERO)";
+         $stmt = $this->conexao->prepare($sql);
+         $stmt->bindParam(":NOME", $nome, PDO::PARAM_STR);
+         $stmt->bindParam(":GENERO", $genero, PDO::PARAM_STR);
+         $stmt->execute();
+      } catch (PDOException $e) {
+         printf("Falha na Inclusão", $e->getMessage());
+         die();
+      }
    }
 
    public function select()
@@ -41,20 +48,20 @@ class FilmeDao
 
    public function selectById($id)
    {
-      $sql = "select * from filmes where id = ?";
+      $sql = "select * from filmes where id = :ID";
       $stmt = $this->conexao->prepare($sql);
-      $stmt->bind_param('i', $id);
+      $stmt->bindParam(":ID", $id, PDO::PARAM_INT);
 
       return $this->getArrayMovies($stmt);
    }
 
    public function selectByName($nome)
    {
-      $nome = "%".$nome."%";
+      $nome = "%" . $nome . "%";
 
-      $sql = "select * from filmes where nome like ?";
+      $sql = "select * from filmes where nome like :NOME";
       $stmt = $this->conexao->prepare($sql);
-      $stmt->bind_param('s', $nome);
+      $stmt->bindParam(":NOME", $nome, PDO::PARAM_STR);
 
       return $this->getArrayMovies($stmt);
    }
@@ -63,9 +70,9 @@ class FilmeDao
    {
       $filmes = new ArrayObject();
       $stmt->execute();
-      $result = $stmt->get_result();
+      $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-      while ($row = $result->fetch_assoc()) {
+      foreach ($result as $row) {
          $f = new Filme();
          $f->setId($row["id"]);
          $f->setNome($row["nome"]);
@@ -73,33 +80,34 @@ class FilmeDao
 
          $filmes->append($f);
       }
-
-      $stmt->close();
       return $filmes;
    }
 
    public function update(Filme $movie)
    {
-      $sql = "update filmes set nome = ?, genero = ? where id = ?";
+      $sql = "update filmes set nome = :NOME, genero = :GENERO where id = :ID";
 
-      $stmt = $this->conexao->prepare($sql);
-      $stmt->bind_param(
-         'ssi',
-         $movie->getNome(),
-         $movie->getGenero(),
-         $movie->getId()
-      );
-      $stmt->execute();
-      $stmt->close();
+      try {
+         $stmt = $this->conexao->prepare($sql);
+         $stmt->bindParam(":NOME", $movie->getNome(), PDO::PARAM_STR);
+         $stmt->bindParam(":GENERO", $movie->getGenero(), PDO::PARAM_STR);
+         $stmt->bindParam(":ID", $movie->getId(), PDO::PARAM_INT);
+         $stmt->execute();
+      } catch (PDOException $e) {
+         printf("Falha na Edição", $e->getMessage());
+      }
    }
 
    public function delete($id)
    {
-      $sql = "delete from filmes where id = ?";
+      try {
+         $sql = "delete from filmes where id = :ID";
 
-      $stmt = $this->conexao->prepare($sql);
-      $stmt->bind_param('i', $id);
-      $stmt->execute();
-      $stmt->close();
+         $stmt = $this->conexao->prepare($sql);
+         $stmt->bindParam(":ID", $id, PDO::PARAM_INT);
+         $stmt->execute();
+      } catch (PDOException $e) {
+         printf("Falha na Exclusão", $e->getMessage());
+      }
    }
 }
