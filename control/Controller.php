@@ -27,7 +27,6 @@ switch ($op) {
 
 function insert()
 {
-
     $nome = $_POST["nome"];
     $genero = $_POST["genero"];
 
@@ -41,17 +40,17 @@ function insert()
 
 function update()
 {
-$id = $_POST['id'];
-$nome = $_POST['nome'];
-$genero = $_POST['genero'];
+    $id = $_POST['id'];
+    $nome = $_POST['nome'];
+    $genero = $_POST['genero'];
 
-$filme = new Filme();
-$filme->setId($id);
-$filme->setNome($nome);
-$filme->setGenero($genero);
+    $filme = new Filme();
+    $filme->setId($id);
+    $filme->setNome($nome);
+    $filme->setGenero($genero);
 
-$filmeDao = new FilmeDao();
-$filmeDao->update($filme);
+    $filmeDao = new FilmeDao();
+    $filmeDao->update($filme);
 }
 
 function delete()

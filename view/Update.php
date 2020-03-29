@@ -28,6 +28,23 @@ use model\FilmeDao;
     $genero = $movies[0]->getGenero();
     ?>
 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="http://localhost/projetos/CRUD/view/select.php">Filmes Hirooka</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="Select.php">Home<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0" action="Select.php" method="POST">
+                <input class="form-control mr-sm-2" type="text" name="genero">
+                <button class="btn btn-success my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+        </div>
+    </nav>
+
     <div class="container">
 
         <h1>Adicionar Filme</h1>
@@ -36,18 +53,18 @@ use model\FilmeDao;
 
             <div class="form-group">
                 <label for="nome">Titulo do Filme</label>
-                <input type="text" class="form-control" placeholder="Nome" name="nome" id="nome" value="<?=$nome; ?>">
+                <input type="text" class="form-control" placeholder="Nome" name="nome" id="nome" value="<?= $nome; ?>">
             </div>
 
             <div class="form-group">
                 <label for="genero">Genero do Filme</label>
-                <input type="text" class="form-control" placeholder="Genero" name="genero" id="genero" value="<?=$genero; ?>">
+                <input type="text" class="form-control" placeholder="Genero" name="genero" id="genero" value="<?= $genero; ?>">
             </div>
 
             <button type="submit" class="btn btn-primary">Salvar</button>
 
             <input type="hidden" id="operacao" name="operacao" value="update" />
-            <input type="hidden" name="id" value="<?=$id; ?>"/>
+            <input type="hidden" name="id" value="<?= $id; ?>" />
 
         </form>
     </div>

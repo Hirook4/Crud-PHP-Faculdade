@@ -34,7 +34,7 @@ class FilmeDao
 
    public function select()
    {
-      $sql = "select * from filmes";
+      $sql = "select * from filmes order by nome";
       $stmt = $this->conexao->prepare($sql);
       return $this->getArrayMovies($stmt);
    }
@@ -45,26 +45,12 @@ class FilmeDao
       $stmt = $this->conexao->prepare($sql);
       $stmt->bind_param('i', $id);
 
-      $filmes = new ArrayObject();
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-      while ($row = $result->fetch_assoc()) {
-         $f = new Filme();
-         $f->setId($row["id"]);
-         $f->setNome($row["nome"]);
-         $f->setGenero($row["genero"]);
-
-         $filmes->append($f);
-      }
-
-      $stmt->close();
-      return $filmes;
+      return $this->getArrayMovies($stmt);
    }
 
    public function selectByName($nome)
    {
-      $nome = "%" . $nome . "%";
+      $nome = "%".$nome."%";
 
       $sql = "select * from filmes where nome like ?";
       $stmt = $this->conexao->prepare($sql);
