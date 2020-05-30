@@ -9,16 +9,28 @@ use model\FilmeDao;
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <script src="../js/Crud.js"></script>
 
     <title>Listagem de Filmes</title>
+
 </head>
 
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="http://localhost/projetos/CRUD/view/select.php">Filmes Hirooka</a>
+        <a class="navbar-brand" href="Select.php">Filmes Hirooka</a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
@@ -27,9 +39,13 @@ use model\FilmeDao;
                 </li>
             </ul>
 
-            <form class="form-inline my-2 my-lg-0" action="Select.php" method="POST">
-                <input class="form-control mr-sm-2" type="text" name="pesquisa">
-                <button class="btn btn-success my-2 my-sm-0" type="submit">Buscar</button>
+            <h1 class="form-inline my-2 my-lg-0 navbar-brand">
+                Não Pesquisar Apertando Enter!
+            </h1>
+
+            <form class="form-inline my-2 my-lg-0" action="../control/Controller.php" method="POST">
+                <input class="form-control mr-sm-2" type="text" id="pesquisa" name="pesquisa">
+                <button onclick="buscarNome();" class="btn btn-success my-2 my-sm-0" type="button">Busca AJAX</button>
             </form>
         </div>
     </nav>
@@ -46,19 +62,19 @@ use model\FilmeDao;
         <?php
 
         if (isset($_POST["pesquisa"])) {
-            
+
             $pesquisa = $_POST["pesquisa"];
 
             if ($pesquisa == null || $pesquisa == "") {
                 $movie = $filmeDao->select();
-                echo("ola");
+                //echo ("ola");
             } else {
                 $movie = $filmeDao->selectByName($pesquisa);
             }
         }
         ?>
 
-        <table class="table table-striped">
+        <table class="table table-striped" id="tabelaFilmes" name="tabelaFilmes">
             <thead>
                 <tr>
                     <th>Código</th>
@@ -67,34 +83,60 @@ use model\FilmeDao;
                     <th colspan="2">Operações</th>
                 </tr>
             </thead>
-            <tbody>
 
-                <?php
-                foreach ($movie as $movieTmp) {
-                    $id = $movieTmp->getId();
-                    $nome = $movieTmp->getNome();
-                    $genero = $movieTmp->getGenero();
-                ?>
-                    <tr>
-                        <td><?= $id; ?></td>
-                        <td><?= $nome; ?></td>
-                        <td><?= $genero; ?></td>
-                        <td><a href='update.php?id=<?= $id; ?>' class='btn btn-warning'>Alterar</a></td>
-                        <td><a href='../control/Controller.php?operacao=delete&id=<?= $id; ?>' class='btn btn-danger'>Excluir</a></td>
-                    </tr>
-                <?php } ?>
+            <tbody>
                 <!-- Fechamento do laço de repetição -->
             </tbody>
         </table>
 
-        <a href="Insert.html" class="btn btn-primary">Novo Registro</a>
+        <button type="button" onclick="exibirModalInsert();" class="btn btn-primary">
+            Novo Registro
+        </button>
 
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-        </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
-        </script>
+        <!-- Inicio do Modal -->
+        <!-- The Modal -->
+        <div class="modal" id="modalInsert">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Cadastro de Filme</h4>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <form id="formInclusao" action="../control/Controller.php" method="post">
+                            <div class="form-group">
+                                <label for="nome">Titulo do Filme</label>
+                                <input type="text" class="form-control" placeholder="Nome" name="nome" id="nome">
+                            </div>
+                            <div class="form-group">
+                                <label for="genero">Genero do Filme</label>
+                                <input type="text" class="form-control" placeholder="Genero" name="genero" id="genero">
+                            </div>
+
+                            <input type="hidden" id="idUpdate" name="idUpdate">
+                        </form>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" onclick="gravarRegistro();" class="btn btn-primary">Salvar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Fim do Modal -->
 </body>
 
 </html>
+
+<script>
+    // Função carregada assim que a pagina é carregada
+    $(function() {
+        carregarRegistros();
+    });
+</script>

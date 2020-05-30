@@ -34,4 +34,3 @@ class Conexao
         }
     }
 }
-//$conexao = new Conexao();

@@ -2,8 +2,8 @@
 
 namespace model;
 
-require_once 'C:\xampp\htdocs\Projetos\CRUD\banco\Conexao.php'; // Tive que colocar todo o caminho para evitar erros no xamp!
-require_once 'Filme.php';
+require_once '../banco/Conexao.php';
+require_once '../model/Filme.php';
 
 use ArrayObject;
 use PDO;

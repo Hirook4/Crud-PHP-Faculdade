@@ -1,6 +1,6 @@
 <?php
 
-require_once 'C:\xampp\htdocs\Projetos\CRUD\model\Filme.php';
+require_once '../model/Filme.php';
 require_once '../model/FilmeDao.php';
 
 use model\Filme;
@@ -11,17 +11,26 @@ $op = $_REQUEST["operacao"];
 switch ($op) {
     case 'insert':
         insert();
-        header("Location: ../view/select.php");
         break;
 
     case 'update':
         update();
-        header("Location: ../view/select.php");
         break;
 
     case 'delete':
         delete();
-        header("Location: ../view/select.php");
+        break;
+
+    case 'select':
+        select();
+        break;
+
+    case 'selectById':
+        selectById();
+        break;
+
+    case 'selectByName':
+        selectByName();
         break;
 }
 
@@ -55,9 +64,47 @@ function update()
 
 function delete()
 {
-
-    $id = $_GET["id"];
+    $id = $_POST["id"];
 
     $filmeDao = new FilmeDao();
     $filmeDao->delete($id);
+}
+
+function select()
+{
+    $filmeDao = new FilmeDao();
+    $movies = $filmeDao->select();
+    echo convertToJson($movies);
+}
+
+function selectById()
+{
+    $id = $_POST['id'];
+    $filmeDao = new FilmeDao();
+    $movies = $filmeDao->selectById($id);
+    echo convertToJson($movies);
+}
+
+function selectByName()
+{
+    $nome = $_POST['nome'];
+    $filmeDao = new FilmeDao();
+    $movies = $filmeDao->selectByName($nome);
+    echo convertToJson($movies);
+}
+
+function convertToJson($movies)
+{
+    $filmes = array();
+
+    foreach ($movies as $movieTMP) {
+        $id = $movieTMP->getid();
+        $nome = $movieTMP->getNome();
+        $genero = $movieTMP->getGenero();
+
+        $arrayTMP = array('id' => $id, 'nome' => $nome, 'genero' => $genero);
+        array_push($filmes, $arrayTMP);
+    }
+
+    return json_encode($filmes);
 }
